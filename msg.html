@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine</title>
+  <style>
+    :root{
+      --bg1:#070a12; --bg2:#140b1a;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.94);
+      --muted: rgba(255,255,255,.72);
+      --accent:#ff4d8d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1100px 700px at 15% 10%, #2a1140 0%, transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, #1a2b65 0%, transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    .center{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      position:relative;
+      z-index:2;
+    }
+    .wrap{width:min(760px, 100%); text-align:center;}
+    .title{
+      font-weight:900;
+      letter-spacing:.18em;
+      margin:0 0 14px 0;
+      font-size: clamp(30px, 5vw, 56px);
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size: clamp(14px, 2vw, 18px);
+    }
+    .card{
+      margin:18px auto 0;
+      border:1px solid var(--stroke);
+      background: var(--card);
+      border-radius:22px;
+      padding:18px;
+      box-shadow: 0 18px 70px rgba(0,0,0,.55);
+      backdrop-filter: blur(12px);
+      position:relative;
+    }
+    .q{
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight:900;
+      margin: 12px 0 16px;
+    }
+    .btns{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      position:relative;
+      min-height:72px;
+    }
+    button{
+      border:none;
+      cursor:pointer;
+      padding:14px 18px;
+      border-radius:16px;
+      font-weight:900;
+      font-size:16px;
+      transition: transform .08s ease;
+    }
+    .yes{
+      background: linear-gradient(90deg, var(--accent), #ff2e6f);
+      color:#1a0711;
+      min-width: 120px;
+    }
+    .no{
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      color: var(--text);
+      min-width: 120px;
+      position:absolute;
+      left: calc(50% + 140px);
+      top: 0;
+    }
+    button:hover{transform: translateY(-1px);}
+    .hidden{display:none !important;}
+    .thanks{
+      margin-top:10px;
+      text-align:center;
+    }
+    .thanks h2{
+      margin:12px 0 6px;
+      font-weight:1000;
+      font-size: clamp(22px, 3vw, 34px);
+    }
+    .thanks p{
+      margin:6px 0;
+      font-size: 18px;
+    }
+    .press{
+      margin-top:16px;
+      color: rgba(255,255,255,.64);
+      font-weight:800;
+    }
+    footer{
+      position:fixed;
+      bottom:16px;
+      width:100%;
+      text-align:center;
+      font-size:13px;
+      color:rgba(255,255,255,.5);
+      letter-spacing:.05em;
+    }
+    canvas#fx{
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fx"></canvas>
+
+  <div class="center">
+    <div class="wrap">
+      <h1 class="title">VALENTINE</h1>
+      <p class="sub">Presiona cualquier tecla para comenzar...</p>
+
+      <div class="card">
+        <div id="screenAsk">
+          <div class="q" id="question"></div>
+          <div class="btns" id="btns">
+            <button class="yes" id="yes">SÍ</button>
+            <button class="no" id="no">NO</button>
+          </div>
+          <div class="press">Tip: el NO no te va a dejar 😌</div>
+        </div>
+
+        <div class="thanks hidden" id="screenThanks">
+          <h2>Gracias mi amor por aceptar</h2>
+          <p>Te amo, Feliz San Valentín</p>
+          <p>¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    222 made with much love by nico
+  </footer>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const to = (qs.get("to") || "mi amor").trim();
+
+    document.getElementById("question").textContent =
+      `¿${to}, querés ser mi Valentine?`;
+
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const btns = document.getElementById("btns");
+
+    function moveNo(){
+      const r = btns.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      const pad = 8;
+
+      const maxX = Math.max(pad, r.width - b.width - pad);
+      const maxY = Math.max(pad, 60);
+
+      const x = pad + Math.random() * maxX;
+      const y = pad + Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    noBtn.addEventListener("mouseenter", moveNo);
+    noBtn.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
+      moveNo();
+    });
+
+    yesBtn.addEventListener("click", ()=>{
+      document.getElementById("screenAsk").classList.add("hidden");
+      document.getElementById("screenThanks").classList.remove("hidden");
+      burst();
+    });
+
+    // Efecto corazones
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+
+    function resize(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const particles = [];
+    function spawn(n=120){
+      for(let i=0;i<n;i++){
+        particles.push({
+          x: window.innerWidth/2,
+          y: window.innerHeight/2,
+          vx: (Math.random()*2-1)*3,
+          vy: (Math.random()*-2-1),
+          g: 0.05,
+          s: 4 + Math.random()*6,
+          a: 1
+        });
+      }
+    }
+
+    function burst(){ spawn(120); }
+
+    function tick(){
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      particles.forEach((p,i)=>{
+        p.vy += p.g;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.a *= 0.985;
+
+        if(p.a < 0.05){
+          particles.splice(i,1);
+          return;
+        }
+
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = "#ff4d8d";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
+        ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
+</body>
+</html>
