@@ -41,7 +41,7 @@
       font-family: "Press Start 2P", system-ui, sans-serif;
     }
 
-    /* ---------- Backgrounds (por pantalla) ---------- */
+    /* Backgrounds */
     body[data-screen="start"]{
       background:
         radial-gradient(900px 520px at 50% 40%, rgba(255,255,255,.08), transparent 60%),
@@ -57,7 +57,7 @@
       color:#fff;
     }
 
-    /* ---------- Corazones flotando (como tu video) ---------- */
+    /* Corazones flotando (pantalla start) */
     #floatField{
       position:fixed;
       inset:0;
@@ -87,7 +87,7 @@
       100% { transform: translate3d(0,0,0) rotate(var(--r)); }
     }
 
-    /* ---------- Stage ---------- */
+    /* Stage */
     .stage{
       position:relative;
       z-index:2;
@@ -95,12 +95,13 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:24px;
+      /* safe padding para que NO pegue en bordes */
+      padding: clamp(18px, 5vw, 28px);
       text-align:center;
     }
     .hidden{ display:none !important; }
 
-    /* ---------- START screen (VALENTINE) ---------- */
+    /* START */
     .title{
       font-size: clamp(28px, 6vw, 64px);
       letter-spacing:.08em;
@@ -129,9 +130,10 @@
       text-shadow: 0 3px 0 rgba(0,0,0,.18);
     }
 
-    /* ---------- Card (estilo original) ---------- */
+    /* Card */
     .card{
-      width:min(560px, 96vw);
+      width: min(560px, calc(100vw - 32px));
+      max-width: 560px;
       background: var(--card);
       color: var(--ink);
       border-radius: 12px;
@@ -159,21 +161,24 @@
       pointer-events:none;
     }
 
-    /* ---------- ASK screen ---------- */
+    /* Ask */
     .q{
       margin:0 0 18px;
       font-size: clamp(12px, 2.4vw, 16px);
       color:#1b1b1b;
     }
+
     .btnRow{
       display:flex;
       justify-content:center;
       gap:18px;
       align-items:center;
       position:relative;
-      height:64px;
-      margin-top:8px;
+      /* suficiente alto para que el NO se mueva sin tapar */
+      height: 72px;
+      margin-top: 8px;
     }
+
     button{
       font-family: "Press Start 2P", system-ui, sans-serif;
       font-size: 12px;
@@ -187,26 +192,27 @@
       background:#e9e9ef;
       color:#1b1b1b;
       min-width: 140px;
+      max-width: 100%;
     }
     button:hover{ transform: translateY(-1px); }
+
     .yes{
       background: linear-gradient(180deg, #31e673, #16b94f);
       border-color: rgba(0,0,0,.14);
       color:#07130b;
     }
+
+    /* NO rojo */
     .no{
-      position:absolute;
-      right: 0;
+      background: linear-gradient(180deg, #ff5b6a, #ff2f63);
+      border-color: rgba(0,0,0,.14);
+      color:#22040b;
+      position: absolute;
       top: 0;
-      background: #e2e2e6;
-    }
-    .tip{
-      margin: 16px 0 0;
-      font-size: 10px;
-      color:#303030;
+      right: 0;
     }
 
-    /* ---------- THANKS screen ---------- */
+    /* THANKS */
     .thanksTitle{
       margin: 0 0 12px;
       font-size: clamp(16px, 3vw, 28px);
@@ -241,7 +247,7 @@
       50%{ transform: translateY(-6px); }
     }
 
-    /* Burst al aceptar */
+    /* Burst */
     #burst{
       position:absolute;
       inset:0;
@@ -279,11 +285,31 @@
       border-radius: 10px;
       box-shadow: 0 10px 24px rgba(0,0,0,.20);
     }
+
+    /* ---------- MOBILE FIX: evitar overlay y bordes pegados ---------- */
+    @media (max-width: 520px){
+      .card{
+        width: calc(100vw - 40px);
+        padding: 20px 14px 16px;
+      }
+      .btnRow{
+        /* en mobile apilamos para que NO nunca pise */
+        flex-direction: column;
+        height: auto;
+        gap: 12px;
+      }
+      .no{
+        position: static; /* clave: deja de ser absolute en mobile */
+      }
+      button{
+        width: min(320px, 100%);
+        min-width: 0;
+      }
+    }
   </style>
 </head>
 
 <body data-screen="start">
-  <!-- Corazones flotando -->
   <div id="floatField" aria-hidden="true"></div>
 
   <div class="stage">
@@ -303,8 +329,6 @@
           <button class="yes" id="yes">Sí</button>
           <button class="no" id="no">NO</button>
         </div>
-
-        <p class="tip">Tip: el NO no te va a dejar 😌</p>
       </div>
     </div>
 
@@ -313,7 +337,7 @@
       <div class="card">
         <h2 class="thanksTitle">Gracias mi amor por aceptar</h2>
         <p class="thanksText">Te amo, Feliz San Valentín</p>
-        <p class="thanksText">¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
+        <p class="thanksText">¿Vamos a tomar el té juntos? Estoy afuera 😁😍</p>
 
         <div class="miniHearts" aria-hidden="true">
           <span>💗</span><span>💞</span><span>💓</span><span>💖</span><span>💘</span>
@@ -338,49 +362,36 @@
     const yesBtn = document.getElementById("yes");
     const burst  = document.getElementById("burst");
 
-    // Texto EXACTO
+    // Texto fijo
     document.getElementById("question").textContent = "Lulu, queres ser mi valentine?";
 
-    // -------- Corazones flotando (como tu video) --------
+    // Corazones flotando START
     const field = document.getElementById("floatField");
     const COLORS = ["#ff2f63", "#ff4aa2", "#ff7bbf", "#ff5c8f"];
-
     function addFloatHeart(){
       const el = document.createElement("div");
       el.className = "fheart";
       el.textContent = "❤";
 
-      const x = (Math.random()*100).toFixed(2) + "vw";
-      const y = (Math.random()*100).toFixed(2) + "vh";
-      const s = (10 + Math.random()*16).toFixed(0) + "px";
-      const c = COLORS[(Math.random()*COLORS.length)|0];
-      const o = (0.55 + Math.random()*0.45).toFixed(2);
+      el.style.setProperty("--x", (Math.random()*100).toFixed(2) + "vw");
+      el.style.setProperty("--y", (Math.random()*100).toFixed(2) + "vh");
+      el.style.setProperty("--s", (10 + Math.random()*16).toFixed(0) + "px");
+      el.style.setProperty("--c", COLORS[(Math.random()*COLORS.length)|0]);
+      el.style.setProperty("--o", (0.55 + Math.random()*0.45).toFixed(2));
 
-      const dx = ((Math.random()*70) - 35).toFixed(0) + "px";
-      const dy = ((Math.random()*50) - 25).toFixed(0) + "px";
-      const r  = ((Math.random()*30) - 15).toFixed(0) + "deg";
+      el.style.setProperty("--dx", ((Math.random()*70) - 35).toFixed(0) + "px");
+      el.style.setProperty("--dy", ((Math.random()*50) - 25).toFixed(0) + "px");
+      el.style.setProperty("--r",  ((Math.random()*30) - 15).toFixed(0) + "deg");
 
       const dur = (3.0 + Math.random()*4.5).toFixed(2) + "s";
-      const delay = (-(Math.random()*dur.replace("s",""))).toFixed(2) + "s";
-
-      el.style.setProperty("--x", x);
-      el.style.setProperty("--y", y);
-      el.style.setProperty("--s", s);
-      el.style.setProperty("--c", c);
-      el.style.setProperty("--o", o);
-      el.style.setProperty("--dx", dx);
-      el.style.setProperty("--dy", dy);
-      el.style.setProperty("--r", r);
       el.style.setProperty("--dur", dur);
-      el.style.setProperty("--delay", delay);
+      el.style.setProperty("--delay", (-(Math.random()*parseFloat(dur))).toFixed(2) + "s");
 
       field.appendChild(el);
     }
-
-    // Densidad similar al video
     for(let i=0;i<52;i++) addFloatHeart();
 
-    // -------- Flow --------
+    // Flow
     let started = false;
     function startFlow(){
       if(started) return;
@@ -390,16 +401,17 @@
       screenStart.classList.add("hidden");
       screenAsk.classList.remove("hidden");
     }
-
     window.addEventListener("keydown", startFlow, { once:true });
     window.addEventListener("pointerdown", startFlow, { once:true });
 
-    // -------- NO se teletransporta dentro del contenedor --------
+    // NO se mueve SOLO en desktop/tablet (en mobile no es absolute, entonces no tapa)
     function moveNo(){
+      const isMobile = window.matchMedia("(max-width: 520px)").matches;
+      if(isMobile) return; // en mobile queda en columna, no escapamos para evitar overlay
+
       const r = btnRow.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
       const pad = 6;
-
       const maxX = Math.max(pad, r.width - b.width - pad);
       const x = pad + Math.random() * maxX;
 
@@ -411,7 +423,7 @@
     noBtn.addEventListener("focus", moveNo);
     noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); moveNo(); });
 
-    // -------- Burst al aceptar + thanks --------
+    // Burst + thanks
     function popBurst(){
       const rect = burst.getBoundingClientRect();
       const x = rect.width/2;
@@ -435,7 +447,6 @@
 
     yesBtn.addEventListener("click", ()=>{
       popBurst();
-
       setTimeout(()=>{
         body.dataset.screen = "thanks";
         screenAsk.classList.add("hidden");
