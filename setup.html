@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Crea tu Valentine</title>
+  <style>
+    :root{
+      --bg1:#0b0f1a; --bg2:#140b1a;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --accent:#ff4d8d;
+      --accent2:#ff9cc0;
+      --ok:#29d17d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1100px 700px at 15% 10%, #2a1140 0%, transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, #1a2b65 0%, transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .wrap{width:min(920px, 100%);}
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; margin-bottom:16px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing:.14em;
+      font-weight:800;
+    }
+    .badge{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      padding:10px 12px;
+      border-radius:999px;
+      color:var(--muted);
+      font-size:14px;
+      white-space:nowrap;
+    }
+    .card{
+      border:1px solid var(--stroke);
+      background: var(--card);
+      border-radius:20px;
+      padding:18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+    }
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px;}
+    @media (max-width: 840px){ .grid{grid-template-columns:1fr;} }
+    label{display:block; color:var(--muted); font-size:14px; margin:10px 0 6px;}
+    input{
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+    }
+    input:focus{border-color: rgba(255,77,141,.55); box-shadow: 0 0 0 4px rgba(255,77,141,.12);}
+    .seg{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .seg button{
+      flex:1 1 160px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      transition: transform .08s ease, border-color .2s ease, background .2s ease;
+      font-weight:700;
+    }
+    .seg button:hover{transform: translateY(-1px); background: rgba(255,255,255,.09);}
+    .seg button[data-active="true"]{
+      border-color: rgba(255,77,141,.65);
+      background: rgba(255,77,141,.16);
+    }
+
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    .primary, .ghost{
+      border:none; cursor:pointer;
+      padding:14px 16px;
+      border-radius:14px;
+      font-weight:800;
+      letter-spacing:.02em;
+      display:inline-flex; align-items:center; gap:10px;
+    }
+    .primary{
+      background: linear-gradient(90deg, var(--accent), #ff2e6f);
+      color: #190713;
+      box-shadow: 0 10px 30px rgba(255,77,141,.18);
+    }
+    .ghost{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      color: var(--text);
+    }
+    .out{
+      margin-top:14px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:14px;
+    }
+    .row{display:flex; gap:10px;}
+    .row input{flex:1;}
+    .hint{color:var(--muted); font-size:13px; margin-top:10px; line-height:1.4;}
+    .ok{color: var(--ok); font-weight:800;}
+    .coffee{
+      margin-top:14px;
+      display:flex; justify-content:flex-end;
+    }
+    .coffee button{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius:999px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    /* Modal */
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .modal[data-open="true"]{display:flex;}
+    .modal .box{
+      width:min(520px, 100%);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,12,20,.92);
+      border-radius:18px;
+      padding:16px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.5);
+      backdrop-filter: blur(10px);
+    }
+    .modal .head{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+    .x{
+      width:38px; height:38px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer; font-size:18px;
+    }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      padding:12px 12px;
+      border-radius:14px;
+      word-break: break-all;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>CREA TU VALENTINE</h1>
+      <div class="badge">v2 · link con parámetros</div>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>De (tu nombre):</label>
+          <input id="from" placeholder="Tu nombre" />
+
+          <label>Para (nombre de tu valentine):</label>
+          <input id="to" placeholder="Nombre de tu valentine" />
+
+          <label>¿A quién se lo vas a enviar?</label>
+          <div class="seg" id="seg">
+            <button type="button" data-value="esposa">Esposa</button>
+            <button type="button" data-value="novios" data-active="true">Novios</button>
+            <button type="button" data-value="amigos">Amigos</button>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="build">Crear Valentine 💕</button>
+            <button class="ghost" id="open">Abrir</button>
+          </div>
+        </div>
+
+        <div class="out">
+          <label>Comparte este enlace:</label>
+          <div class="row">
+            <input id="link" readonly value="" />
+            <button class="ghost" id="copy">📋 Copiar enlace</button>
+          </div>
+          <div class="hint" id="status">
+            Tip: esto genera <span class="mono">msg.html?from=...&to=...&tipo=...</span>
+          </div>
+
+          <div class="coffee">
+            <button id="coffeeBtn">☕ Apoya este proyecto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <div class="head">
+        <div>
+          <div style="font-weight:900; letter-spacing:.06em;">APOYA ESTE PROYECTO</div>
+          <div style="color:rgba(255,255,255,.65); margin-top:4px; font-size:13px;">CLABE Interbancaria:</div>
+        </div>
+        <button class="x" id="close">×</button>
+      </div>
+
+      <div style="margin-top:12px;" class="mono" id="clabe">000000000000000000</div>
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="primary" id="copyClabe">📋 Copiar CLABE</button>
+        <button class="ghost" id="close2">Cerrar</button>
+      </div>
+
+      <div class="hint" style="margin-top:10px;">
+        Nota: reemplazá la CLABE por la tuya.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const fromEl = $("from");
+    const toEl = $("to");
+    const linkEl = $("link");
+    const seg = $("seg");
+    let tipo = "novios";
+
+    function setActive(btn){
+      [...seg.querySelectorAll("button")].forEach(b => b.dataset.active = "false");
+      btn.dataset.active = "true";
+      tipo = btn.dataset.value;
+      build();
+    }
+
+    seg.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      setActive(btn);
+    });
+
+    function build(){
+      const from = (fromEl.value || "TuNombre").trim();
+      const to = (toEl.value || "TuValentine").trim();
+
+      const base = location.href.replace(/setup\.html.*$/i, "msg.html");
+      const url = new URL(base);
+      url.searchParams.set("from", from);
+      url.searchParams.set("to", to);
+      url.searchParams.set("tipo", tipo);
+
+      linkEl.value = url.toString();
+      $("status").innerHTML = `Listo: <span class="ok">link generado</span>`;
+    }
+
+    $("build").addEventListener("click", build);
+
+    $("open").addEventListener("click", ()=>{
+      if(!linkEl.value) build();
+      window.open(linkEl.value, "_blank");
+    });
+
+    $("copy").addEventListener("click", async ()=>{
+      if(!linkEl.value) build();
+      await navigator.clipboard.writeText(linkEl.value);
+      $("status").innerHTML = `Copiado: <span class="ok">pegalo donde quieras</span>`;
+    });
+
+    // Modal coffee
+    const modal = $("modal");
+    $("coffeeBtn").addEventListener("click", ()=> modal.dataset.open = "true");
+    $("close").addEventListener("click", ()=> modal.dataset.open = "false");
+    $("close2").addEventListener("click", ()=> modal.dataset.open = "false");
+    modal.addEventListener("click", (e)=>{ if(e.target === modal) modal.dataset.open = "false"; });
+
+    $("copyClabe").addEventListener("click", async ()=>{
+      await navigator.clipboard.writeText($("clabe").textContent.trim());
+      $("copyClabe").textContent = "✅ Copiada";
+      setTimeout(()=> $("copyClabe").textContent = "📋 Copiar CLABE", 1200);
+    });
+
+    // Defaults from query (por si querés reusar)
+    const q = new URLSearchParams(location.search);
+    if(q.get("from")) fromEl.value = q.get("from");
+    if(q.get("to")) toEl.value = q.get("to");
+    if(q.get("tipo")){
+      const t = q.get("tipo");
+      const btn = seg.querySelector(`button[data-value="${CSS.escape(t)}"]`);
+      if(btn) setActive(btn);
+    }
+    build();
+  </script>
+</body>
+</html>
