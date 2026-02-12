@@ -5,124 +5,147 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Valentine</title>
 
-  <!-- Pixel font (como el original) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bgTop:#0b1328;
-      --bgMid:#0c2a55;
-      --bgBot:#0a3a7a;
+      --pink1:#ff9fc9;
+      --pink2:#ffd1e5;
 
-      --pink:#ff4aa2;
-      --pink2:#ff7bbf;
-      --red:#ff2f63;
+      --blue1:#07172e;
+      --blue2:#0a2d5a;
+      --blue3:#0a3c7c;
 
-      --white:#f7f7fb;
+      --purple1:#5a55c8;
+      --purple2:#7452b9;
+
+      --card:#f7f7fb;
+      --ink:#1b1b1b;
+
+      --border1:#ff67b3;
+      --border2:#ff3d9a;
+
       --shadow: rgba(0,0,0,.25);
+
+      --red:#ff2f63;
+      --btnShadow: rgba(0,0,0,.20);
     }
 
     *{ box-sizing:border-box; }
-
+    html,body{ height:100%; }
     body{
       margin:0;
-      min-height:100vh;
       overflow:hidden;
-      background:
-        radial-gradient(900px 520px at 50% 35%, rgba(255,255,255,.08), transparent 60%),
-        linear-gradient(180deg, var(--bgTop) 0%, var(--bgMid) 55%, var(--bgBot) 100%);
       font-family: "Press Start 2P", system-ui, sans-serif;
+    }
+
+    /* ---------- Backgrounds (por pantalla) ---------- */
+    body[data-screen="start"]{
+      background:
+        radial-gradient(900px 520px at 50% 40%, rgba(255,255,255,.08), transparent 60%),
+        linear-gradient(180deg, var(--blue1) 0%, var(--blue2) 55%, var(--blue3) 100%);
+      color:#fff;
+    }
+    body[data-screen="ask"]{
+      background: linear-gradient(135deg, var(--pink1) 0%, var(--pink2) 100%);
+      color:#fff;
+    }
+    body[data-screen="thanks"]{
+      background: linear-gradient(135deg, var(--purple1) 0%, var(--purple2) 100%);
       color:#fff;
     }
 
-    /* Lluvia de corazones */
-    #rain{
+    /* ---------- Corazones flotando (como tu video) ---------- */
+    #floatField{
       position:fixed;
       inset:0;
       pointer-events:none;
-      overflow:hidden;
       z-index:1;
+      display:none;
     }
-    .heart{
+    body[data-screen="start"] #floatField{ display:block; }
+
+    .fheart{
       position:absolute;
-      top:-10vh;
-      will-change: transform;
-      animation-name: fall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
+      left: var(--x);
+      top: var(--y);
+      font-size: var(--s);
+      color: var(--c);
+      opacity: var(--o);
       filter: drop-shadow(0 6px 8px rgba(0,0,0,.25));
-      opacity:.95;
+      will-change: transform;
+      animation: drift var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
       user-select:none;
+      transform: translate3d(0,0,0) rotate(var(--r));
     }
-    @keyframes fall{
-      to { transform: translate3d(0, 120vh, 0); }
+    @keyframes drift{
+      0%   { transform: translate3d(0,0,0) rotate(var(--r)); }
+      50%  { transform: translate3d(var(--dx), var(--dy), 0) rotate(calc(var(--r) + 18deg)); }
+      100% { transform: translate3d(0,0,0) rotate(var(--r)); }
     }
 
-    /* Layout */
+    /* ---------- Stage ---------- */
     .stage{
       position:relative;
       z-index:2;
-      min-height:100vh;
+      min-height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:24px;
       text-align:center;
     }
+    .hidden{ display:none !important; }
 
-    /* Pantalla 1 */
+    /* ---------- START screen (VALENTINE) ---------- */
     .title{
       font-size: clamp(28px, 6vw, 64px);
       letter-spacing:.08em;
       color:#ff5c8f;
-      text-shadow:
-        0 4px 0 rgba(0,0,0,.25),
-        0 0 18px rgba(255,80,150,.25);
+      text-shadow: 0 4px 0 rgba(0,0,0,.25), 0 0 18px rgba(255,80,150,.22);
       margin:0 0 18px 0;
-      position:relative;
       display:inline-block;
+      position:relative;
     }
     .title::before,
     .title::after{
       content:"💗";
-      font-size: clamp(18px, 3vw, 30px);
       position:absolute;
-      top: 50%;
+      top:50%;
       transform: translateY(-55%);
+      font-size: clamp(18px, 3vw, 30px);
       filter: drop-shadow(0 4px 6px rgba(0,0,0,.25));
     }
-    .title::before{ left:-54px; }
-    .title::after{ right:-54px; }
+    .title::before{ left:-56px; }
+    .title::after{ right:-56px; }
 
     .subtitle{
       margin:0;
       font-size: clamp(10px, 2.2vw, 14px);
       color: rgba(255,255,255,.75);
-      text-shadow: 0 3px 0 rgba(0,0,0,.20);
+      text-shadow: 0 3px 0 rgba(0,0,0,.18);
     }
 
-    /* Pantalla 2 - tarjeta */
+    /* ---------- Card (estilo original) ---------- */
     .card{
-      width:min(680px, 100%);
-      background: var(--white);
-      color:#1a1a1a;
-      border-radius: 14px;
-      padding: 26px 18px 22px;
+      width:min(560px, 96vw);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 22px 18px 18px;
       box-shadow: 0 18px 50px var(--shadow);
       position:relative;
       margin: 0 auto;
     }
-
-    /* doble borde rosa como el screenshot */
     .card::before{
       content:"";
       position:absolute;
       inset:-12px;
-      border-radius: 18px;
-      border: 6px solid var(--pink2);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.35) inset;
+      border-radius: 16px;
+      border: 6px solid var(--border1);
       opacity:.95;
       pointer-events:none;
     }
@@ -130,70 +153,112 @@
       content:"";
       position:absolute;
       inset:-20px;
-      border-radius: 22px;
-      border: 6px solid var(--pink);
-      opacity:.85;
+      border-radius: 20px;
+      border: 6px solid var(--border2);
+      opacity:.75;
       pointer-events:none;
     }
 
-    .card h2{
-      margin: 0 0 14px;
-      color: var(--red);
-      font-size: clamp(18px, 3vw, 34px);
-      line-height:1.05;
-      text-shadow: 0 3px 0 rgba(0,0,0,.08);
+    /* ---------- ASK screen ---------- */
+    .q{
+      margin:0 0 18px;
+      font-size: clamp(12px, 2.4vw, 16px);
+      color:#1b1b1b;
     }
-
-    .card p{
-      margin: 10px 0;
-      font-size: clamp(10px, 2vw, 14px);
-      line-height:1.6;
-      color:#2a2a2a;
-    }
-
     .btnRow{
-      margin-top: 22px;
       display:flex;
-      gap:12px;
       justify-content:center;
-      flex-wrap:wrap;
+      gap:18px;
+      align-items:center;
       position:relative;
-      min-height: 62px;
+      height:64px;
+      margin-top:8px;
     }
-
     button{
       font-family: "Press Start 2P", system-ui, sans-serif;
-      cursor:pointer;
-      border:none;
-      padding: 14px 16px;
-      border-radius: 12px;
       font-size: 12px;
-      letter-spacing:.02em;
-      transition: transform .08s ease;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 3px solid rgba(0,0,0,.12);
+      cursor:pointer;
       user-select:none;
+      transition: transform .08s ease;
+      box-shadow: 0 10px 20px var(--btnShadow);
+      background:#e9e9ef;
+      color:#1b1b1b;
+      min-width: 140px;
     }
     button:hover{ transform: translateY(-1px); }
-
     .yes{
-      background: linear-gradient(180deg, #ff69a8, #ff2f63);
-      color:#13040a;
-      box-shadow: 0 10px 22px rgba(255,60,120,.25);
-      min-width: 140px;
+      background: linear-gradient(180deg, #31e673, #16b94f);
+      border-color: rgba(0,0,0,.14);
+      color:#07130b;
     }
     .no{
-      background: rgba(15,20,35,.10);
-      border: 3px solid rgba(0,0,0,.12);
-      color:#222;
-      min-width: 140px;
-
-      /* se posiciona dentro del contenedor y “escapa” */
       position:absolute;
-      left: calc(50% + 160px);
+      right: 0;
       top: 0;
+      background: #e2e2e6;
+    }
+    .tip{
+      margin: 16px 0 0;
+      font-size: 10px;
+      color:#303030;
     }
 
-    /* Estado */
-    .hidden{ display:none !important; }
+    /* ---------- THANKS screen ---------- */
+    .thanksTitle{
+      margin: 0 0 12px;
+      font-size: clamp(16px, 3vw, 28px);
+      color: var(--red);
+      text-shadow: 0 3px 0 rgba(0,0,0,.08);
+      line-height:1.05;
+    }
+    .thanksText{
+      margin: 10px 0;
+      font-size: clamp(10px, 2vw, 13px);
+      color:#2a2a2a;
+      line-height:1.65;
+    }
+    .miniHearts{
+      margin-top: 14px;
+      display:flex;
+      justify-content:center;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    .miniHearts span{
+      font-size: 18px;
+      filter: drop-shadow(0 5px 6px rgba(0,0,0,.15));
+      animation: floaty 1.8s ease-in-out infinite;
+    }
+    .miniHearts span:nth-child(2){ animation-delay:.2s }
+    .miniHearts span:nth-child(3){ animation-delay:.4s }
+    .miniHearts span:nth-child(4){ animation-delay:.6s }
+    .miniHearts span:nth-child(5){ animation-delay:.8s }
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-6px); }
+    }
+
+    /* Burst al aceptar */
+    #burst{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .p{
+      position:absolute;
+      font-size: 16px;
+      animation: pop 600ms ease-out forwards;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,.2));
+    }
+    @keyframes pop{
+      0%{ transform: translate(-50%,-50%) scale(.7); opacity:0; }
+      15%{ opacity:1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(1.2); opacity:0; }
+    }
 
     /* Footer */
     footer{
@@ -206,9 +271,8 @@
       pointer-events:none;
     }
     .tag{
-      pointer-events:none;
       font-size: 10px;
-      color: rgba(255,255,255,.7);
+      color: rgba(255,255,255,.75);
       background: rgba(0,0,0,.28);
       border: 2px solid rgba(255,255,255,.18);
       padding: 8px 10px;
@@ -218,36 +282,42 @@
   </style>
 </head>
 
-<body>
-  <!-- Lluvia -->
-  <div id="rain" aria-hidden="true"></div>
+<body data-screen="start">
+  <!-- Corazones flotando -->
+  <div id="floatField" aria-hidden="true"></div>
 
   <div class="stage">
+    <!-- START -->
     <div id="screenStart">
       <h1 class="title">VALENTINE</h1>
       <p class="subtitle">Presiona cualquier tecla para comenzar...</p>
     </div>
 
-    <div id="screenAsk" class="hidden" style="width:min(680px,100%);">
+    <!-- ASK -->
+    <div id="screenAsk" class="hidden">
       <div class="card">
-        <div style="margin-bottom:16px;">
-          <div id="question" class="subtitle" style="color:#1a1a1a; text-shadow:none; font-size:14px;"></div>
-        </div>
+        <div id="burst"></div>
+        <p class="q" id="question">Lulu, queres ser mi valentine?</p>
 
         <div class="btnRow" id="btnRow">
-          <button class="yes" id="yes">SÍ</button>
+          <button class="yes" id="yes">Sí</button>
           <button class="no" id="no">NO</button>
         </div>
 
-        <p style="margin-top:16px; color:#444; font-size:10px;">Tip: el NO no te va a dejar 😌</p>
+        <p class="tip">Tip: el NO no te va a dejar 😌</p>
       </div>
     </div>
 
-    <div id="screenThanks" class="hidden" style="width:min(680px,100%);">
+    <!-- THANKS -->
+    <div id="screenThanks" class="hidden">
       <div class="card">
-        <h2>Gracias mi amor por aceptar</h2>
-        <p>Te amo, Feliz San Valentín</p>
-        <p>¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
+        <h2 class="thanksTitle">Gracias mi amor por aceptar</h2>
+        <p class="thanksText">Te amo, Feliz San Valentín</p>
+        <p class="thanksText">¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
+
+        <div class="miniHearts" aria-hidden="true">
+          <span>💗</span><span>💞</span><span>💓</span><span>💖</span><span>💘</span>
+        </div>
       </div>
     </div>
   </div>
@@ -257,23 +327,66 @@
   </footer>
 
   <script>
-    // Params
-    const qs = new URLSearchParams(location.search);
-    const to = (qs.get("to") || "mi amor").trim();
+    const body = document.body;
 
-    // Texto con “querés”
-    document.getElementById("question").textContent =
-      `¿${to}, querés ser mi Valentine?`;
-
-    // Pantallas
-    const screenStart = document.getElementById("screenStart");
-    const screenAsk = document.getElementById("screenAsk");
+    const screenStart  = document.getElementById("screenStart");
+    const screenAsk    = document.getElementById("screenAsk");
     const screenThanks = document.getElementById("screenThanks");
 
+    const btnRow = document.getElementById("btnRow");
+    const noBtn  = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const burst  = document.getElementById("burst");
+
+    // Texto EXACTO
+    document.getElementById("question").textContent = "Lulu, queres ser mi valentine?";
+
+    // -------- Corazones flotando (como tu video) --------
+    const field = document.getElementById("floatField");
+    const COLORS = ["#ff2f63", "#ff4aa2", "#ff7bbf", "#ff5c8f"];
+
+    function addFloatHeart(){
+      const el = document.createElement("div");
+      el.className = "fheart";
+      el.textContent = "❤";
+
+      const x = (Math.random()*100).toFixed(2) + "vw";
+      const y = (Math.random()*100).toFixed(2) + "vh";
+      const s = (10 + Math.random()*16).toFixed(0) + "px";
+      const c = COLORS[(Math.random()*COLORS.length)|0];
+      const o = (0.55 + Math.random()*0.45).toFixed(2);
+
+      const dx = ((Math.random()*70) - 35).toFixed(0) + "px";
+      const dy = ((Math.random()*50) - 25).toFixed(0) + "px";
+      const r  = ((Math.random()*30) - 15).toFixed(0) + "deg";
+
+      const dur = (3.0 + Math.random()*4.5).toFixed(2) + "s";
+      const delay = (-(Math.random()*dur.replace("s",""))).toFixed(2) + "s";
+
+      el.style.setProperty("--x", x);
+      el.style.setProperty("--y", y);
+      el.style.setProperty("--s", s);
+      el.style.setProperty("--c", c);
+      el.style.setProperty("--o", o);
+      el.style.setProperty("--dx", dx);
+      el.style.setProperty("--dy", dy);
+      el.style.setProperty("--r", r);
+      el.style.setProperty("--dur", dur);
+      el.style.setProperty("--delay", delay);
+
+      field.appendChild(el);
+    }
+
+    // Densidad similar al video
+    for(let i=0;i<52;i++) addFloatHeart();
+
+    // -------- Flow --------
     let started = false;
     function startFlow(){
       if(started) return;
       started = true;
+
+      body.dataset.screen = "ask";
       screenStart.classList.add("hidden");
       screenAsk.classList.remove("hidden");
     }
@@ -281,94 +394,54 @@
     window.addEventListener("keydown", startFlow, { once:true });
     window.addEventListener("pointerdown", startFlow, { once:true });
 
-    // Botón NO que se escapa
-    const noBtn = document.getElementById("no");
-    const yesBtn = document.getElementById("yes");
-    const row = document.getElementById("btnRow");
-    let escapes = 0;
-
+    // -------- NO se teletransporta dentro del contenedor --------
     function moveNo(){
-      const r = row.getBoundingClientRect();
+      const r = btnRow.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
       const pad = 6;
 
-      // límites dentro del contenedor
       const maxX = Math.max(pad, r.width - b.width - pad);
-      const maxY = Math.max(pad, 42);
-
       const x = pad + Math.random() * maxX;
-      const y = pad + Math.random() * maxY;
 
       noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-
-      escapes++;
-      const scale = Math.min(1 + escapes * 0.06, 1.45);
-      yesBtn.style.transform = `scale(${scale})`;
+      noBtn.style.top  = "0px";
     }
 
     noBtn.addEventListener("mouseenter", moveNo);
     noBtn.addEventListener("focus", moveNo);
     noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); moveNo(); });
 
-    // Aceptar
-    yesBtn.addEventListener("click", ()=>{
-      screenAsk.classList.add("hidden");
-      screenThanks.classList.remove("hidden");
-    });
+    // -------- Burst al aceptar + thanks --------
+    function popBurst(){
+      const rect = burst.getBoundingClientRect();
+      const x = rect.width/2;
+      const y = 42;
 
-    // ---- Lluvia de corazones (como el screenshot) ----
-    const rain = document.getElementById("rain");
-    const COLORS = ["#ff2f63", "#ff4aa2", "#ff7bbf", "#ff5c8f"];
+      const EMOJIS = ["💗","💞","💓","💖","💘","💕"];
+      for(let i=0;i<18;i++){
+        const p = document.createElement("div");
+        p.className = "p";
+        p.textContent = EMOJIS[(Math.random()*EMOJIS.length)|0];
 
-    function spawnHeart(){
-      const el = document.createElement("div");
-      el.className = "heart";
+        p.style.left = x + "px";
+        p.style.top  = y + "px";
+        p.style.setProperty("--dx", (Math.random()*220 - 110).toFixed(0) + "px");
+        p.style.setProperty("--dy", (Math.random()*180 - 120).toFixed(0) + "px");
 
-      const left = Math.random() * 100;               // vw
-      const size = 10 + Math.random() * 18;           // px
-      const dur = 4.5 + Math.random() * 6.5;          // s
-      const delay = Math.random() * 2.5;              // s
-      const drift = (Math.random() * 60 - 30);        // px sideways slight
-      const color = COLORS[(Math.random()*COLORS.length)|0];
-      const opacity = 0.55 + Math.random() * 0.45;
-
-      el.style.left = left + "vw";
-      el.style.fontSize = size + "px";
-      el.style.color = color;
-      el.style.opacity = opacity;
-      el.style.animationDuration = dur + "s";
-      el.style.animationDelay = (-delay) + "s"; // arranca ya “en medio”
-
-      // drift lateral suave
-      el.animate(
-        [
-          { transform: `translate3d(${drift}px, -10vh, 0)` },
-          { transform: `translate3d(${-drift}px, 120vh, 0)` }
-        ],
-        { duration: dur * 1000, iterations: Infinity, easing: "linear" }
-      );
-
-      // emoji corazón (pixel vibe)
-      el.textContent = "❤";
-
-      rain.appendChild(el);
-      return el;
-    }
-
-    // Generamos una “lluvia” densa como el original
-    const HEARTS = 42;
-    const nodes = [];
-    for(let i=0;i<HEARTS;i++){
-      nodes.push(spawnHeart());
-    }
-
-    // Si la pestaña queda mucho tiempo, refrescamos posiciones cada tanto (para que no se “acomoden”)
-    setInterval(()=>{
-      for(const el of nodes){
-        el.style.left = (Math.random()*100) + "vw";
+        burst.appendChild(p);
+        p.addEventListener("animationend", ()=> p.remove(), { once:true });
       }
-    }, 6000);
+    }
+
+    yesBtn.addEventListener("click", ()=>{
+      popBurst();
+
+      setTimeout(()=>{
+        body.dataset.screen = "thanks";
+        screenAsk.classList.add("hidden");
+        screenThanks.classList.remove("hidden");
+      }, 380);
+    });
   </script>
 </body>
 </html>
