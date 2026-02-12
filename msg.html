@@ -4,244 +4,371 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Valentine</title>
+
+  <!-- Pixel font (como el original) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg1:#070a12; --bg2:#140b1a;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.94);
-      --muted: rgba(255,255,255,.72);
-      --accent:#ff4d8d;
+      --bgTop:#0b1328;
+      --bgMid:#0c2a55;
+      --bgBot:#0a3a7a;
+
+      --pink:#ff4aa2;
+      --pink2:#ff7bbf;
+      --red:#ff2f63;
+
+      --white:#f7f7fb;
+      --shadow: rgba(0,0,0,.25);
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+
     body{
-      margin:0; min-height:100vh; color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1100px 700px at 15% 10%, #2a1140 0%, transparent 55%),
-                  radial-gradient(900px 600px at 90% 20%, #1a2b65 0%, transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      margin:0;
+      min-height:100vh;
       overflow:hidden;
+      background:
+        radial-gradient(900px 520px at 50% 35%, rgba(255,255,255,.08), transparent 60%),
+        linear-gradient(180deg, var(--bgTop) 0%, var(--bgMid) 55%, var(--bgBot) 100%);
+      font-family: "Press Start 2P", system-ui, sans-serif;
+      color:#fff;
     }
-    .center{
+
+    /* Lluvia de corazones */
+    #rain{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:1;
+    }
+    .heart{
+      position:absolute;
+      top:-10vh;
+      will-change: transform;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,.25));
+      opacity:.95;
+      user-select:none;
+    }
+    @keyframes fall{
+      to { transform: translate3d(0, 120vh, 0); }
+    }
+
+    /* Layout */
+    .stage{
+      position:relative;
+      z-index:2;
       min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:24px;
-      position:relative;
-      z-index:2;
+      text-align:center;
     }
-    .wrap{width:min(760px, 100%); text-align:center;}
+
+    /* Pantalla 1 */
     .title{
-      font-weight:900;
-      letter-spacing:.18em;
-      margin:0 0 14px 0;
-      font-size: clamp(30px, 5vw, 56px);
-    }
-    .sub{
-      margin:0;
-      color:var(--muted);
-      font-size: clamp(14px, 2vw, 18px);
-    }
-    .card{
-      margin:18px auto 0;
-      border:1px solid var(--stroke);
-      background: var(--card);
-      border-radius:22px;
-      padding:18px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.55);
-      backdrop-filter: blur(12px);
+      font-size: clamp(28px, 6vw, 64px);
+      letter-spacing:.08em;
+      color:#ff5c8f;
+      text-shadow:
+        0 4px 0 rgba(0,0,0,.25),
+        0 0 18px rgba(255,80,150,.25);
+      margin:0 0 18px 0;
       position:relative;
+      display:inline-block;
     }
-    .q{
-      font-size: clamp(22px, 3vw, 30px);
-      font-weight:900;
-      margin: 12px 0 16px;
+    .title::before,
+    .title::after{
+      content:"💗";
+      font-size: clamp(18px, 3vw, 30px);
+      position:absolute;
+      top: 50%;
+      transform: translateY(-55%);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.25));
     }
-    .btns{
+    .title::before{ left:-54px; }
+    .title::after{ right:-54px; }
+
+    .subtitle{
+      margin:0;
+      font-size: clamp(10px, 2.2vw, 14px);
+      color: rgba(255,255,255,.75);
+      text-shadow: 0 3px 0 rgba(0,0,0,.20);
+    }
+
+    /* Pantalla 2 - tarjeta */
+    .card{
+      width:min(680px, 100%);
+      background: var(--white);
+      color:#1a1a1a;
+      border-radius: 14px;
+      padding: 26px 18px 22px;
+      box-shadow: 0 18px 50px var(--shadow);
+      position:relative;
+      margin: 0 auto;
+    }
+
+    /* doble borde rosa como el screenshot */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-12px;
+      border-radius: 18px;
+      border: 6px solid var(--pink2);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.35) inset;
+      opacity:.95;
+      pointer-events:none;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:-20px;
+      border-radius: 22px;
+      border: 6px solid var(--pink);
+      opacity:.85;
+      pointer-events:none;
+    }
+
+    .card h2{
+      margin: 0 0 14px;
+      color: var(--red);
+      font-size: clamp(18px, 3vw, 34px);
+      line-height:1.05;
+      text-shadow: 0 3px 0 rgba(0,0,0,.08);
+    }
+
+    .card p{
+      margin: 10px 0;
+      font-size: clamp(10px, 2vw, 14px);
+      line-height:1.6;
+      color:#2a2a2a;
+    }
+
+    .btnRow{
+      margin-top: 22px;
       display:flex;
       gap:12px;
       justify-content:center;
       flex-wrap:wrap;
       position:relative;
-      min-height:72px;
+      min-height: 62px;
     }
+
     button{
-      border:none;
+      font-family: "Press Start 2P", system-ui, sans-serif;
       cursor:pointer;
-      padding:14px 18px;
-      border-radius:16px;
-      font-weight:900;
-      font-size:16px;
+      border:none;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      letter-spacing:.02em;
       transition: transform .08s ease;
+      user-select:none;
     }
+    button:hover{ transform: translateY(-1px); }
+
     .yes{
-      background: linear-gradient(90deg, var(--accent), #ff2e6f);
-      color:#1a0711;
-      min-width: 120px;
+      background: linear-gradient(180deg, #ff69a8, #ff2f63);
+      color:#13040a;
+      box-shadow: 0 10px 22px rgba(255,60,120,.25);
+      min-width: 140px;
     }
     .no{
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.16);
-      color: var(--text);
-      min-width: 120px;
+      background: rgba(15,20,35,.10);
+      border: 3px solid rgba(0,0,0,.12);
+      color:#222;
+      min-width: 140px;
+
+      /* se posiciona dentro del contenedor y “escapa” */
       position:absolute;
-      left: calc(50% + 140px);
+      left: calc(50% + 160px);
       top: 0;
     }
-    button:hover{transform: translateY(-1px);}
-    .hidden{display:none !important;}
-    .thanks{
-      margin-top:10px;
-      text-align:center;
-    }
-    .thanks h2{
-      margin:12px 0 6px;
-      font-weight:1000;
-      font-size: clamp(22px, 3vw, 34px);
-    }
-    .thanks p{
-      margin:6px 0;
-      font-size: 18px;
-    }
-    .press{
-      margin-top:16px;
-      color: rgba(255,255,255,.64);
-      font-weight:800;
-    }
+
+    /* Estado */
+    .hidden{ display:none !important; }
+
+    /* Footer */
     footer{
       position:fixed;
-      bottom:16px;
-      width:100%;
-      text-align:center;
-      font-size:13px;
-      color:rgba(255,255,255,.5);
-      letter-spacing:.05em;
+      left:0; right:0;
+      bottom: 14px;
+      display:flex;
+      justify-content:center;
+      z-index:3;
+      pointer-events:none;
     }
-    canvas#fx{
-      position:fixed; inset:0; z-index:1; pointer-events:none;
+    .tag{
+      pointer-events:none;
+      font-size: 10px;
+      color: rgba(255,255,255,.7);
+      background: rgba(0,0,0,.28);
+      border: 2px solid rgba(255,255,255,.18);
+      padding: 8px 10px;
+      border-radius: 10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.20);
     }
   </style>
 </head>
+
 <body>
-  <canvas id="fx"></canvas>
+  <!-- Lluvia -->
+  <div id="rain" aria-hidden="true"></div>
 
-  <div class="center">
-    <div class="wrap">
+  <div class="stage">
+    <div id="screenStart">
       <h1 class="title">VALENTINE</h1>
-      <p class="sub">Presiona cualquier tecla para comenzar...</p>
+      <p class="subtitle">Presiona cualquier tecla para comenzar...</p>
+    </div>
 
+    <div id="screenAsk" class="hidden" style="width:min(680px,100%);">
       <div class="card">
-        <div id="screenAsk">
-          <div class="q" id="question"></div>
-          <div class="btns" id="btns">
-            <button class="yes" id="yes">SÍ</button>
-            <button class="no" id="no">NO</button>
-          </div>
-          <div class="press">Tip: el NO no te va a dejar 😌</div>
+        <div style="margin-bottom:16px;">
+          <div id="question" class="subtitle" style="color:#1a1a1a; text-shadow:none; font-size:14px;"></div>
         </div>
 
-        <div class="thanks hidden" id="screenThanks">
-          <h2>Gracias mi amor por aceptar</h2>
-          <p>Te amo, Feliz San Valentín</p>
-          <p>¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
+        <div class="btnRow" id="btnRow">
+          <button class="yes" id="yes">SÍ</button>
+          <button class="no" id="no">NO</button>
         </div>
+
+        <p style="margin-top:16px; color:#444; font-size:10px;">Tip: el NO no te va a dejar 😌</p>
+      </div>
+    </div>
+
+    <div id="screenThanks" class="hidden" style="width:min(680px,100%);">
+      <div class="card">
+        <h2>Gracias mi amor por aceptar</h2>
+        <p>Te amo, Feliz San Valentín</p>
+        <p>¿Vamos a tomar el té juntos? Estoy afuera ☕</p>
       </div>
     </div>
   </div>
 
   <footer>
-    222 made with much love by nico
+    <div class="tag">222 made with much love by nico</div>
   </footer>
 
   <script>
+    // Params
     const qs = new URLSearchParams(location.search);
     const to = (qs.get("to") || "mi amor").trim();
 
+    // Texto con “querés”
     document.getElementById("question").textContent =
       `¿${to}, querés ser mi Valentine?`;
 
+    // Pantallas
+    const screenStart = document.getElementById("screenStart");
+    const screenAsk = document.getElementById("screenAsk");
+    const screenThanks = document.getElementById("screenThanks");
+
+    let started = false;
+    function startFlow(){
+      if(started) return;
+      started = true;
+      screenStart.classList.add("hidden");
+      screenAsk.classList.remove("hidden");
+    }
+
+    window.addEventListener("keydown", startFlow, { once:true });
+    window.addEventListener("pointerdown", startFlow, { once:true });
+
+    // Botón NO que se escapa
     const noBtn = document.getElementById("no");
     const yesBtn = document.getElementById("yes");
-    const btns = document.getElementById("btns");
+    const row = document.getElementById("btnRow");
+    let escapes = 0;
 
     function moveNo(){
-      const r = btns.getBoundingClientRect();
+      const r = row.getBoundingClientRect();
       const b = noBtn.getBoundingClientRect();
-      const pad = 8;
+      const pad = 6;
 
+      // límites dentro del contenedor
       const maxX = Math.max(pad, r.width - b.width - pad);
-      const maxY = Math.max(pad, 60);
+      const maxY = Math.max(pad, 42);
 
       const x = pad + Math.random() * maxX;
       const y = pad + Math.random() * maxY;
 
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
+
+      escapes++;
+      const scale = Math.min(1 + escapes * 0.06, 1.45);
+      yesBtn.style.transform = `scale(${scale})`;
     }
 
     noBtn.addEventListener("mouseenter", moveNo);
-    noBtn.addEventListener("pointerdown", (e)=>{
-      e.preventDefault();
-      moveNo();
-    });
+    noBtn.addEventListener("focus", moveNo);
+    noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); moveNo(); });
 
+    // Aceptar
     yesBtn.addEventListener("click", ()=>{
-      document.getElementById("screenAsk").classList.add("hidden");
-      document.getElementById("screenThanks").classList.remove("hidden");
-      burst();
+      screenAsk.classList.add("hidden");
+      screenThanks.classList.remove("hidden");
     });
 
-    // Efecto corazones
-    const canvas = document.getElementById("fx");
-    const ctx = canvas.getContext("2d");
+    // ---- Lluvia de corazones (como el screenshot) ----
+    const rain = document.getElementById("rain");
+    const COLORS = ["#ff2f63", "#ff4aa2", "#ff7bbf", "#ff5c8f"];
 
-    function resize(){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    function spawnHeart(){
+      const el = document.createElement("div");
+      el.className = "heart";
+
+      const left = Math.random() * 100;               // vw
+      const size = 10 + Math.random() * 18;           // px
+      const dur = 4.5 + Math.random() * 6.5;          // s
+      const delay = Math.random() * 2.5;              // s
+      const drift = (Math.random() * 60 - 30);        // px sideways slight
+      const color = COLORS[(Math.random()*COLORS.length)|0];
+      const opacity = 0.55 + Math.random() * 0.45;
+
+      el.style.left = left + "vw";
+      el.style.fontSize = size + "px";
+      el.style.color = color;
+      el.style.opacity = opacity;
+      el.style.animationDuration = dur + "s";
+      el.style.animationDelay = (-delay) + "s"; // arranca ya “en medio”
+
+      // drift lateral suave
+      el.animate(
+        [
+          { transform: `translate3d(${drift}px, -10vh, 0)` },
+          { transform: `translate3d(${-drift}px, 120vh, 0)` }
+        ],
+        { duration: dur * 1000, iterations: Infinity, easing: "linear" }
+      );
+
+      // emoji corazón (pixel vibe)
+      el.textContent = "❤";
+
+      rain.appendChild(el);
+      return el;
     }
-    window.addEventListener("resize", resize);
-    resize();
 
-    const particles = [];
-    function spawn(n=120){
-      for(let i=0;i<n;i++){
-        particles.push({
-          x: window.innerWidth/2,
-          y: window.innerHeight/2,
-          vx: (Math.random()*2-1)*3,
-          vy: (Math.random()*-2-1),
-          g: 0.05,
-          s: 4 + Math.random()*6,
-          a: 1
-        });
+    // Generamos una “lluvia” densa como el original
+    const HEARTS = 42;
+    const nodes = [];
+    for(let i=0;i<HEARTS;i++){
+      nodes.push(spawnHeart());
+    }
+
+    // Si la pestaña queda mucho tiempo, refrescamos posiciones cada tanto (para que no se “acomoden”)
+    setInterval(()=>{
+      for(const el of nodes){
+        el.style.left = (Math.random()*100) + "vw";
       }
-    }
-
-    function burst(){ spawn(120); }
-
-    function tick(){
-      ctx.clearRect(0,0,canvas.width, canvas.height);
-      particles.forEach((p,i)=>{
-        p.vy += p.g;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.a *= 0.985;
-
-        if(p.a < 0.05){
-          particles.splice(i,1);
-          return;
-        }
-
-        ctx.globalAlpha = p.a;
-        ctx.fillStyle = "#ff4d8d";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
-        ctx.fill();
-      });
-      requestAnimationFrame(tick);
-    }
-    tick();
+    }, 6000);
   </script>
 </body>
 </html>
